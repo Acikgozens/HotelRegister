@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mezuniyet Hakki</title>
+    <style>
+     * {
+        font-family: 'Times New Roman', Times, serif;
+
+        }
+
+        body {
+            background: rgb(219,226,226);
+        }
+
+        h1   {
+        color: blue;
+        }
+
+        h4   {
+        color: red;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+<div>
+    <h1>Musteri Listesi</h1>
+    <h4>Musterileri listelemek için aşağıdaki butona basınız!</h4>
+    <input type="button" value="Musterileri Listele" onclick="musterileriListele()"/>
+    <br>
+    <br>
+    <div id="musteriListesi"></div>
+</div>
+
+
+<div>
+    <h1>Musteri Ekle</h1>
+    <h4>Musteriyi eklemek için bilgilerini doldurup aşağıdaki butona basınız!</h4>
+    <input type="text" id="tcKimlikNo" placeholder="Tc" maxlength="11" name="tcKimlikNo"><br>
+    <input type="text" id="ad" placeholder="Ad" name="ad"><br>
+    <input type="text" id="soyad" placeholder="Soyad" name="soyad"><br>
+    <input type="date" id="girisTarihi" placeholder="Giris Tarihi" name="girisTarihi"><br>
+    <input type="date" id="dogumTarihi" placeholder="Dogum Tarihi" name="dogumTarihi"><br>
+    <input type="text" id="telefon" placeholder="Telefon" maxlength="11" name="telefon"><br>
+    <input type="email" id="eposta" placeholder="Eposta" name="eposta"><br>
+    <br>
+    <div style="color:red;" id="ekleSonuc"></div>
+    <br>
+    <input type="submit" value="Submit" onclick="musteriEkle();">
+
+    <br>
+    <br>
+</div>
+
+<div>
+    <h1>Musteri Güncelle</h1>
+    <h4>Musteriyi güncellemek için bilgilerini doldurup aşağıdaki butona basınız!</h4>
+    <input type="text" id="id_guncelleme" placeholder="ID"><br>
+    <input type="text" id="tcKimlikNo_guncelleme" placeholder="Tc" maxlength="11" name="tcKimlikNo"><br>
+    <input type="text" id="ad_guncelleme" placeholder="Ad" name="ad"><br>
+    <input type="text" id="soyad_guncelleme" placeholder="Soyad" name="soyad"><br>
+    <input type="date" id="girisTarihi_guncelleme" placeholder="Giris Tarihi" name="girisTarihi"><br>
+    <input type="date" id="dogumTarihi_guncelleme" placeholder="Dogum Tarihi" name="dogumTarihi"><br>
+    <input type="text" id="telefon_guncelleme" placeholder="Telefon" maxlength="11" name="telefon"><br>
+    <input type="email" id="eposta_guncelleme" placeholder="Eposta" name="eposta"><br>
+    <br>
+    <div style="color:red;" id="ekleSonuc1"></div>
+    <br>
+    <input type="submit" value="Submit" onclick="musteriGuncelle();">
+
+
+    <br>
+    <br>
+</div>
+<div>
+    <h1>Musteri Silme</h1>
+    <h4>Musteriyi silmek için id bilgisini girip aşağıdaki butona basınız!</h4>
+    <input type="text" id="id_silme" placeholder="ID">
+    <input type="button" value="Musteri Sil" onclick="musteriSil()"/>
+    <br>
+    <br>
+</div>
+<div>
+    <h1>Musteri Getir</h1>
+    <h4>Musterileri listelemek için aşağıdaki butona basınız!</h4>
+    <input type="text" id="getir_id" placeholder="ID">
+    <input type="button" value="Musteri Getir" onclick="musteriGetir()"/>
+    <br>
+    <br>
+    <div id="getirListesi"></div>
+</div>
+<script>
+        function musteriSil() {
+            var id = document.getElementById("id_silme").value;
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.open("DELETE", "http://localhost:8080/musteri-sil/" + id, true);
+            httpRequest.onreadystatechange = function () {
+                if(httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    musterileriListele();
+                }
+            };
+            httpRequest.send();
+        }
+        function musteriGuncelle() {
+            var id = document.getElementById("id_guncelleme").value;
+            const parametreler = {
+                tcKimlikNo: document.getElementById("tcKimlikNo_guncelleme").value,
+                ad: document.getElementById("ad_guncelleme").value,
+                soyad: document.getElementById("soyad_guncelleme").value,
+                girisTarihi: document.getElementById("girisTarihi_guncelleme").value,
+                dogumTarihi: document.getElementById("dogumTarihi_guncelleme").value,
+                telefon: document.getElementById("telefon_guncelleme").value,
+                eposta: document.getElementById("eposta_guncelleme").value
+            }
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.open("PUT", "http://localhost:8080/musteri-guncelle/" + id, true);
+            httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            httpRequest.onreadystatechange = function () {
+                if(httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    musterileriListele();
+                    document.getElementById("ekleSonuc1").innerHTML = "";
+                }else{
+                    document.getElementById("ekleSonuc1").innerHTML = httpRequest.response;
+                }
+            };
+            httpRequest.send(JSON.stringify(parametreler));
+        }
+        function musteriEkle() {
+            const parametreler = {
+                tcKimlikNo: document.getElementById("tcKimlikNo").value,
+                ad: document.getElementById("ad").value,
+                soyad: document.getElementById("soyad").value,
+                girisTarihi: document.getElementById("girisTarihi").value,
+                dogumTarihi: document.getElementById("dogumTarihi").value,
+                telefon: document.getElementById("telefon").value,
+                eposta: document.getElementById("eposta").value
+            }
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.open("POST", "http://localhost:8080/musteri-ekle", true);
+            httpRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            httpRequest.onreadystatechange = function () {
+                if(httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    musterileriListele();
+                    document.getElementById("ekleSonuc").innerHTML = "";
+                } else {
+                    document.getElementById("ekleSonuc").innerHTML = httpRequest.response;
+                }
+            };
+            httpRequest.send(JSON.stringify(parametreler));
+        }
+        function musterileriListele() {
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.open("GET", "http://localhost:8080/musteri-listele", true);
+            httpRequest.onreadystatechange = function () {
+                if(httpRequest.readyState == 4 && httpRequest.status == 200) {
+                    var musteriler = JSON.parse(httpRequest.response);
+                    var tabloIlkKisim = "<table><tr><th>ID</th><th>Tc</th><th>Ad</th><th>Soyad</th><th>GirisTarihi</th><th>DogumTarihi</th><th>Telefon</th><th>Eposta</th></tr>";
+                    var tabloVeriKismi = "";
+                    for (var i = 0; i < musteriler.length; i++) {
+                        tabloVeriKismi += "<tr><td>" + musteriler[i].id + "</td>"
+                        + "<td>" + musteriler[i].tcKimlikNo + "</td>" +
+                        ""
+                        + "<td>" + musteriler[i].ad + "</td>" +
+                        ""
+                        + "<td>" + musteriler[i].soyad + "</td>" +
+                        ""
+                        + "<td>" + musteriler[i].girisTarihi + "</td>" +
+                        ""
+                        + "<td>" + musteriler[i].dogumTarihi + "</td>" +
+                        ""
+                        + "<td>" + musteriler[i].telefon + "</td>" +
+                        ""
+                        + "<td>" + musteriler[i].eposta + "</td>" +
+                        "</tr>";
+                    }
+                    var tabloSonKisim = "</table>";
+                    var tablo = tabloIlkKisim + tabloVeriKismi + tabloSonKisim;
+                    document.getElementById("musteriListesi").innerHTML = tablo;
+                }
+            };
+            httpRequest.send();
+        }
+        function musteriGetir() {
+        var id = document.getElementById("getir_id").value;
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open("GET", "http://localhost:8080/musteri-getir/{id}?id="+ id, true);
+        httpRequest.onreadystatechange = function () {
+            if(httpRequest.readyState == 4 && httpRequest.status == 200) {
+                var musteri = JSON.parse(httpRequest.response);
+                var tabloIlkKisim = "<table><tr><th>Id</th><th>Tc</th><th>Ad</th><th>Soyad</th><th>GirisTarihi</th><th>DogumTarihi</th><th>Telefon</th><th>Eposta</th></tr>";
+                var tabloVeriKismi = "";
+
+                tabloVeriKismi += "<tr><td>" + musteri.id + "</td>"
+                    + "<td>" + musteri.tcKimlikNo + "</td>"
+                    + "<td>" + musteri.ad + "</td>"
+                    + "<td>" + musteri.soyad + "</td>"
+                    + "<td>" + musteri.girisTarihi + "</td>"
+                    + "<td>" + musteri.dogumTarihi + "</td>"
+                    + "<td>" + musteri.telefon + "</td>"
+                    + "<td>" + musteri.eposta + "</td></tr>";
+
+                var tabloSonKisim = "</table>";
+                var tablo = tabloIlkKisim + tabloVeriKismi + tabloSonKisim;
+                document.getElementById("getirListesi").innerHTML = tablo;
+            }
+        };
+            httpRequest.send();
+       }
+
+
+
+
+</script>
+</body>
+</html>
